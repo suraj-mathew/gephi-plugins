@@ -1,0 +1,5 @@
+Manifest-Version: 1.0
+OpenIDE-Module-Name: MitmJavaProxy Gephi Connector
+OpenIDE-Module-Short-Description: A bridge between Gephi and MitmJavaProxy
+OpenIDE-Module-Long-Description: A bridge between Gephi and MitmJavaProxy
+OpenIDE-Module-Display-Category: Generator

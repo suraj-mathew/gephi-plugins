@@ -12,12 +12,14 @@
     <!-- List of modules -->
     <modules>
         <!-- Add here the paths of all modules (e.g. <module>modules/MyModule</module>) -->
+        <module>modules/MitmJavaProxyGephiConnect</module>
     </modules>
     
     <!-- Properties -->
     <properties>
         <!-- Version of Gephi building plugins against. Plugins with anterior versions will be ignored -->
         <gephi.version>0.10.0</gephi.version>
+	<netbeans.version>RELEASE240</netbeans.version>
         <clusters.path>${project.build.directory}/plugins_clusters</clusters.path>
         <github.global.server>github</github.global.server>
     </properties>
@@ -39,6 +41,14 @@
                 <enabled>true</enabled>
             </snapshots>
         </repository>
+		<repository>
+			<id>netbeans</id>
+			<name>NetBeans</name>
+			<url>https://netbeans.apidesign.org/maven2/</url>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+		</repository>
     </repositories>
     
     <!-- Plugin Repositories -->
@@ -70,6 +80,7 @@
             <classifier>linux-x64</classifier>
             <type>tar.gz</type>
         </dependency>
+        
     </dependencies>
     
     <build>
@@ -84,7 +95,7 @@
                 <plugin>
                     <groupId>org.apache.netbeans.utilities</groupId>
                     <artifactId>nbm-maven-plugin</artifactId>
-                    <version>4.5</version>
+                    <version>14.2</version>
                     <extensions>true</extensions>
                 </plugin>
                 <plugin>
@@ -156,6 +167,8 @@
                 <artifactId>nbm-maven-plugin</artifactId>
                 <configuration>
                     <nbmBuildDir>${clusters.path}</nbmBuildDir>
+                    <verifyRuntime>skip</verifyRuntime> 
+					<useOSGiDependencies>true</useOSGiDependencies>
                 </configuration>
                 <executions>
                     <execution>
