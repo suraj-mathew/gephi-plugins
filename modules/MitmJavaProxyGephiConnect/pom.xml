@@ -14,17 +14,17 @@
 
     <name>MitmJavaProxy Gephi Connector</name>
 	
-	<properties>
-		<netbeans.version>RELEASE240</netbeans.version>
-	</properties>
+    <properties>
+        <netbeans.version>RELEASE160</netbeans.version>
+    </properties>
 	
     <dependencies>
-		<dependency>
-			<groupId>website.magyar</groupId>
-			<artifactId>mitm-java-proxy</artifactId>
-			<version>2.5.28.127</version>
-		</dependency>
-		<dependency>
+        <dependency>
+            <groupId>website.magyar</groupId>
+            <artifactId>mitm-java-proxy</artifactId>
+            <version>2.5.28.127</version>
+        </dependency>
+        <dependency>
             <groupId>org.gephi</groupId>
             <artifactId>layout-plugin</artifactId>
         </dependency>
@@ -32,15 +32,18 @@
             <groupId>org.gephi</groupId>
             <artifactId>project-api</artifactId>
         </dependency>
-<dependency>
-    <groupId>org.gephi</groupId>
-    <artifactId>io-processor-plugin</artifactId>
-    <version>0.9.2</version>
-</dependency>
-<dependency>
-    <groupId>org.gephi</groupId>
-    <artifactId>io-generator-plugin</artifactId>
-</dependency>
+<!--        <dependency>
+            <groupId>org.gephi</groupId>
+            <artifactId>io-importer-plugin</artifactId> - troubling package 
+        </dependency>-->
+        <dependency>
+            <groupId>org.gephi</groupId>
+            <artifactId>io-importer-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.gephi</groupId>
+            <artifactId>io-generator-plugin</artifactId>
+        </dependency>
         <dependency>
             <groupId>org.netbeans.api</groupId>
             <artifactId>org-openide-util-lookup</artifactId>
@@ -55,7 +58,7 @@
         </dependency>
         <dependency>
             <groupId>org.gephi</groupId>
-            <artifactId>io-generator-api</artifactId>
+            <artifactId>io-generator-api</artifactId>            
         </dependency>
         <dependency>
             <groupId>org.gephi</groupId>
@@ -83,69 +86,65 @@
         </dependency>
         <dependency>
             <groupId>org.gephi</groupId>
-            <artifactId>io-importer-api</artifactId>
+            <artifactId>core-library-wrapper</artifactId>
         </dependency>
-		<dependency>
-			<groupId>org.gephi</groupId>
-			<artifactId>core-library-wrapper</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.gephi</groupId>
-			<artifactId>db-drivers</artifactId>
-			<scope>runtime</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.ow2.asm</groupId>
-			<artifactId>asm</artifactId>
-			<version>9.7.1</version>
-		</dependency>
+        <dependency>
+            <groupId>org.gephi</groupId>
+            <artifactId>db-drivers</artifactId>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.ow2.asm</groupId>
+            <artifactId>asm</artifactId>
+            <version>9.7.1</version>
+        </dependency>
 
-		<!-- Items below are added to overcome netbeans maven plugin error -->
-		<dependency>
-			<groupId>javax.servlet</groupId>
-			<artifactId>javax.servlet-api</artifactId>
-			<version>4.0.1</version>
-		</dependency>
-		<dependency>
-			<groupId>org.eclipse.jetty</groupId>
-			<artifactId>jetty-util</artifactId>
-			<version>12.0.16</version>
-		</dependency>
-		<dependency>
-			<groupId>org.eclipse.jetty</groupId>
-			<artifactId>jetty-io</artifactId>
-			<version>12.0.16</version>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.ant</groupId>
-			<artifactId>ant</artifactId>
-			<version>1.10.15</version>
-		</dependency>
-		<dependency>
-			<groupId>com.google.protobuf</groupId>
-			<artifactId>protobuf-java</artifactId>
-			<version>4.29.2</version>
-		</dependency>
-		<dependency>
-			<groupId>dnsjava</groupId>
-			<artifactId>dnsjava</artifactId>
-			<version>3.6.2</version>
-		</dependency>
-		<dependency>
-			<groupId>org.brotli</groupId>
-			<artifactId>dec</artifactId>
-			<version>0.1.2</version>
-		</dependency>
-		<dependency>
-			<groupId>org.checkerframework</groupId>
-			<artifactId>checker</artifactId>
-			<version>3.48.3</version>
-		</dependency>
-		<dependency>
-			<groupId>org.checkerframework</groupId>
-			<artifactId>checker-util</artifactId>
-			<version>3.48.3</version>
-		</dependency>
+        <!-- Items below are added to overcome netbeans maven plugin error -->
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>javax.servlet-api</artifactId>
+            <version>4.0.1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.jetty</groupId>
+            <artifactId>jetty-util</artifactId>
+            <version>12.0.16</version>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.jetty</groupId>
+            <artifactId>jetty-io</artifactId>
+            <version>12.0.16</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.ant</groupId>
+            <artifactId>ant</artifactId>
+            <version>1.10.15</version>
+        </dependency>
+        <dependency>
+            <groupId>com.google.protobuf</groupId>
+            <artifactId>protobuf-java</artifactId>
+            <version>4.29.2</version>
+        </dependency>
+        <dependency>
+            <groupId>dnsjava</groupId>
+            <artifactId>dnsjava</artifactId>
+            <version>3.6.2</version>
+        </dependency>
+        <dependency>
+            <groupId>org.brotli</groupId>
+            <artifactId>dec</artifactId>
+            <version>0.1.2</version>
+        </dependency>
+        <dependency>
+            <groupId>org.checkerframework</groupId>
+            <artifactId>checker</artifactId>
+            <version>3.48.3</version>
+        </dependency>
+        <dependency>
+            <groupId>org.checkerframework</groupId>
+            <artifactId>checker-util</artifactId>
+            <version>3.48.3</version>
+        </dependency>
     </dependencies>
 
     <build>
@@ -161,14 +160,14 @@
                     <authorUrl>https://github.com/suraj-mathew</authorUrl>
                     <sourceCodeUrl>https://github.com/suraj-mathew/gephi-plugins</sourceCodeUrl>
                     <publicPackages>
-						<!-- Insert public packages -->
+                        <!-- Insert public packages -->
                     </publicPackages>
                 </configuration>
             </plugin>
         </plugins>
     </build>
 
-	<!-- Snapshot Repositories (only needed if developing against a SNAPSHOT version) -->
+    <!-- Snapshot Repositories (only needed if developing against a SNAPSHOT version) -->
     <repositories>
         <repository>
             <id>oss-sonatype</id>
@@ -178,14 +177,14 @@
                 <enabled>true</enabled>
             </snapshots>
         </repository>
-		<repository>
-			<id>netbeans</id>
-			<name>NetBeans</name>
-			<url>https://netbeans.apidesign.org/maven2/</url>
-			<snapshots>
-				<enabled>false</enabled>
-			</snapshots>
-		</repository>
+        <repository>
+            <id>netbeans</id>
+            <name>NetBeans</name>
+            <url>https://netbeans.apidesign.org/maven2/</url>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
     </repositories>
 </project>
 

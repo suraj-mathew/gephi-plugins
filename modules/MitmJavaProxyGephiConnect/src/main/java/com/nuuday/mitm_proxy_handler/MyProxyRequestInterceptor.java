@@ -1,5 +1,6 @@
 package com.nuuday.mitm_proxy_handler;
 
+import com.nuuday.commons.LoggerUtils;
 import org.apache.http.Header;
 
 import website.magyar.mitm.proxy.RequestInterceptor;
@@ -15,11 +16,11 @@ public class MyProxyRequestInterceptor implements RequestInterceptor {
 		String messageId = request.getMessageId();
 		String methodName = request.getMethod().getMethod();
 		
-		System.out.println(messageId+" -> fullUrl - "+fullUrl);
+		          LoggerUtils.info(messageId+" -> fullUrl - "+fullUrl);
 		Header[] headerArray = request.getMethod().getAllHeaders();
 		
 		for(int index=0; index < headerArray.length; index++) {
-			System.out.println(messageId+" -> "+headerArray[index].getName()+" : "+headerArray[index].getValue());
+			LoggerUtils.info(messageId+" -> "+headerArray[index].getName()+" : "+headerArray[index].getValue());
 		}
 	}
 

@@ -19,7 +19,7 @@
     <properties>
         <!-- Version of Gephi building plugins against. Plugins with anterior versions will be ignored -->
         <gephi.version>0.10.0</gephi.version>
-	<netbeans.version>RELEASE240</netbeans.version>
+	<netbeans.version>RELEASE160</netbeans.version>
         <clusters.path>${project.build.directory}/plugins_clusters</clusters.path>
         <github.global.server>github</github.global.server>
     </properties>
@@ -168,7 +168,7 @@
                 <configuration>
                     <nbmBuildDir>${clusters.path}</nbmBuildDir>
                     <verifyRuntime>skip</verifyRuntime> 
-					<useOSGiDependencies>true</useOSGiDependencies>
+		    <useOSGiDependencies>false</useOSGiDependencies>
                 </configuration>
                 <executions>
                     <execution>

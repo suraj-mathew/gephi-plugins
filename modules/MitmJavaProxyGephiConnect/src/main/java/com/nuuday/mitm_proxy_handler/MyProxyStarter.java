@@ -1,5 +1,6 @@
 package com.nuuday.mitm_proxy_handler;
 
+import com.nuuday.commons.LoggerUtils;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -9,9 +10,9 @@ import website.magyar.mitm.proxy.ProxyServer;
 
 public class MyProxyStarter {
 
-	private final int PROXY_TIMEOUT = 10000; //5 sec
-    public ProxyServer proxyServer;
-    public int proxyPort;
+	private final int PROXY_TIMEOUT = 10000; //10 sec
+    private ProxyServer proxyServer;
+    private int proxyPort = 12230;
     
     static MyProxyStarter myProxyStarter = new MyProxyStarter();
     
@@ -22,14 +23,15 @@ public class MyProxyStarter {
 
     public void startProxy() throws Exception {
     	if(proxyServer == null) {
-    		proxyServer = new ProxyServer(12230); //0 means random port
+                LoggerUtils.info("Going to start mitm server...");
+    		proxyServer = new ProxyServer(proxyPort); //0 means random port
     		proxyServer.start(PROXY_TIMEOUT);
     		proxyPort = proxyServer.getPort(); //get the proxy server port
     		proxyServer.addRequestInterceptor(new MyProxyRequestInterceptor());
     		
-    		System.out.println("\nServer started in port - "+proxyPort);
+    		LoggerUtils.info("\nServer started in port - "+proxyPort);
     	} else {
-    		System.out.println("\n Proxy server already running");
+    		LoggerUtils.info("\n Proxy server already running");
     	}
     }
 
@@ -48,10 +50,10 @@ public class MyProxyStarter {
 		boolean isActive = true;
 		
 		while(isActive) {
-			System.out.println("1. Start proxy server");
-			System.out.println("2. Stop proxy server");
-			System.out.println("3. Exit");
-			System.out.println("\n\nEnter your choice:");
+			LoggerUtils.info("1. Start proxy server");
+			LoggerUtils.info("2. Stop proxy server");
+			LoggerUtils.info("3. Exit");
+			LoggerUtils.info("\n\nEnter your choice:");
 			
 			try {
 				reader = new BufferedReader(new InputStreamReader(System.in));
@@ -76,13 +78,13 @@ public class MyProxyStarter {
 				
 			} catch (InputMismatchException inputMismatchException) {
 				System.err.println(inputMismatchException.getMessage());
-				System.out.println("\n\n");
+				LoggerUtils.info("\n\n");
 			} catch (IOException ioException) {
 				System.err.println(ioException.getMessage());
-				System.out.println("\n\n");
+				LoggerUtils.info("\n\n");
 			}
 		}
 		
-		System.out.println("\n\nExited");
+		LoggerUtils.info("\n\nExited");
     }
 }
