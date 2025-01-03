@@ -1,5 +1,6 @@
 package com.nuuday.mitm_proxy_handler;
 
+import com.nuuday.commons.CommonUtils;
 import com.nuuday.commons.LoggerUtils;
 import org.apache.http.Header;
 
@@ -16,12 +17,14 @@ public class MyProxyRequestInterceptor implements RequestInterceptor {
 		String messageId = request.getMessageId();
 		String methodName = request.getMethod().getMethod();
 		
-		          LoggerUtils.info(messageId+" -> fullUrl - "+fullUrl);
+		LoggerUtils.info(messageId+" -> fullUrl - "+fullUrl);
 		Header[] headerArray = request.getMethod().getAllHeaders();
 		
-		for(int index=0; index < headerArray.length; index++) {
+                CommonUtils.addToMessageQueue(fullUrl);
+                
+		/*for(int index=0; index < headerArray.length; index++) {
 			LoggerUtils.info(messageId+" -> "+headerArray[index].getName()+" : "+headerArray[index].getValue());
-		}
+		}*/
 	}
 
 }

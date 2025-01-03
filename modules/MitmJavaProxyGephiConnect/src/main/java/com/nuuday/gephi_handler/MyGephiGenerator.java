@@ -21,6 +21,8 @@ import org.gephi.io.importer.api.EdgeMergeStrategy;
 import org.gephi.io.importer.api.ImportController;
 import org.gephi.io.importer.api.NodeDraft;
 import org.gephi.io.processor.spi.Processor;
+import org.gephi.layout.api.LayoutController;
+import org.gephi.layout.spi.LayoutBuilder;
 import org.gephi.project.api.ProjectController;
 import org.gephi.project.api.Workspace;
 import org.gephi.utils.progress.ProgressTicket;
@@ -50,38 +52,43 @@ public class MyGephiGenerator implements Generator {
     }
 
     @Override
-    public void generate(ContainerLoader container) {
+    public void generate(ContainerLoader containerLoader) {
 
         LoggerUtils.info("----GENERATE-----");
 
         String currentHeadMessage = null;
 
         try {
-            LoggerUtils.info("----11111111-----");
-            container = null;// Doing the same way as that of a working plugin.
-            LoggerUtils.info("----22222-----");
-            workspace = Lookup.getDefault().lookup(ProjectController.class).getCurrentWorkspace();
-            LoggerUtils.info("----333333333-----");
-            workspace.getWorkspaceMetadata().setTitle("Mitm-Java-Proxy-workspace");
-            LoggerUtils.info("----444444444-----");
-            workspace.getProject().getProjectMetadata().setTitle("Mitm-Java-Proxy");
-            LoggerUtils.info("----555555-----");
-
             progress.start();
-            LoggerUtils.info("----6666666666-----");
+            
             //start server
             proxyStarter = new MyProxyStarter();
             LoggerUtils.info("----777777-----");
             proxyStarter.startProxy();
             LoggerUtils.info("----8888888888-----");
 
+            LoggerUtils.info("----11111111-----");
+            containerLoader.setEdgesMergeStrategy(EdgeMergeStrategy.FIRST);
+            containerLoader.setAllowAutoNode(false);
+            containerLoader.setFillLabelWithId(true);
+            
+            LoggerUtils.info("----22222-----");
+       
+            //workspace = Lookup.getDefault().lookup(ProjectController.class).openNewWorkspace();
+            //LoggerUtils.info("----333333333-----"+workspace);
+            //workspace.getWorkspaceMetadata().setTitle("Mitm-Java-Proxy-workspace");
+            LoggerUtils.info("----444444444-----");
+            //workspace.getProject().getProjectMetadata().setTitle("Mitm-Java-Proxy-p");
+            LoggerUtils.info("----555555-----");
+
             while (!isProcessCancelled) {
 
                 currentHeadMessage = CommonUtils.getFirstElementFromMessageQueue();
 
                 if (CommonUtils.isNotNull(currentHeadMessage)) {
+                    LoggerUtils.info("---- Got new message from queue -----");
                     try {
-                        addUrlDataToGraph(new URI(currentHeadMessage));
+                        addUrlDataToGraph(new URI(currentHeadMessage),containerLoader);
                     } catch (URISyntaxException uriSyntaxException) {
                         LoggerUtils.info("###### URISyntaxException for \"" + currentHeadMessage + "\". Hence skipping this url");
                         LoggerUtils.info(uriSyntaxException.getMessage());
@@ -135,66 +142,66 @@ public class MyGephiGenerator implements Generator {
         }
     }
 
-    private void addUrlDataToGraph(URI uri) {
+    private NodeDraft createOrGetNode(String nodeName, ContainerLoader containerLoader) {
+        LoggerUtils.info("NEW NODE NEEDED - " + nodeName);
+        NodeDraft nodeDraft = null;
+        
+        if (!containerLoader.nodeExists(nodeName)) {
+            
+            nodeDraft = containerLoader.factory().newNodeDraft(nodeName);
+            
+            if (!DOMAIN_COLOR_MAP.containsKey(nodeName) && !COLOR_ARRAY.isEmpty()) {
+                LoggerUtils.info("----ADD to DOMAIN_COLOR_MAP -----");
+                DOMAIN_COLOR_MAP.put(nodeName, COLOR_ARRAY.remove(0));
+            }
+            
+            if (DOMAIN_COLOR_MAP.containsKey(nodeName)) {
+                LoggerUtils.info("----Set Node color -----" + DOMAIN_COLOR_MAP.get(nodeName));
+                nodeDraft.setColor(DOMAIN_COLOR_MAP.get(nodeName));
+            } else {
+                LoggerUtils.info("----Set Node color AS GREY-----");
+                nodeDraft.setColor(Color.LIGHT_GRAY);
+            }
+            
+            nodeDraft.setLabelVisible(true);
+            nodeDraft.setLabel(nodeName);
+            nodeDraft.setLabelColor(Color.BLACK);
+            nodeDraft.setSize(10f);
+            nodeDraft.setLabelSize(14f);
+            
+            containerLoader.addNode(nodeDraft);
+        } else {
+            LoggerUtils.info("NODE EXIST - " + nodeName);
+            nodeDraft = containerLoader.getNode(nodeName);
+            nodeDraft.setSize(nodeDraft.getSize() + 1f);
+            LoggerUtils.info("NODE - visible?"+nodeDraft.isLabelVisible()+"-size-"+nodeDraft.getSize());
+        }
+        
+        return nodeDraft;
+    }
+    
+    private void addUrlDataToGraph(URI uri,ContainerLoader containerLoader) {
         
         NodeDraft sourceNode;
         NodeDraft destinationNode;
         EdgeDraft edgeDraft;
 
-        Container container = null;
-        ContainerLoader containerLoader = null;
-
+LoggerUtils.info("----addUrlDataToGraph 11111 -----"+uri.toString());
         String domain = uri.getHost();
         String queryParams = uri.getQuery();
         String path = uri.getPath();
-
-        container = Lookup.getDefault().lookup(Container.Factory.class).newContainer();
-        container.setSource("Mitm-Java-Proxy-container");
-
-        containerLoader = container.getLoader();
-        containerLoader.setEdgesMergeStrategy(EdgeMergeStrategy.FIRST);
-        containerLoader.setAllowAutoNode(false);
-
-        if (!containerLoader.nodeExists(domain)) {
-            LoggerUtils.info("NEW NODE NEEDED - " + domain);
-            sourceNode = containerLoader.factory().newNodeDraft(domain);
-
-            if (!DOMAIN_COLOR_MAP.containsKey(domain) && !DOMAIN_COLOR_MAP.isEmpty()) {
-                DOMAIN_COLOR_MAP.put(domain, COLOR_ARRAY.remove(0));
-            }
-
-            if (DOMAIN_COLOR_MAP.containsKey(domain)) {
-                sourceNode.setColor(DOMAIN_COLOR_MAP.get(domain));
-                sourceNode.setLabelVisible(true);
-            } else {
-                sourceNode.setColor(Color.BLACK);
-                sourceNode.setLabelVisible(false);
-            }
-
-            sourceNode.setLabel(domain);
-            sourceNode.setSize(100f);
-
-            containerLoader.addNode(sourceNode);
-        } else {
-            LoggerUtils.info("NODE EXIST - " + domain);
-            sourceNode = containerLoader.getNode(domain);
-        }
+LoggerUtils.info("----addUrlDataToGraph domain -----"+domain);
+            sourceNode = createOrGetNode(domain, containerLoader);
+       
 
         for (String pathParam : path.split("/")) {
 
             if (pathParam.trim().length() == 0) {
                 continue;
             }
-            if (!containerLoader.nodeExists(pathParam)) {
-                LoggerUtils.info("NEW DEST NODE FOR EDGE NEEDED - " + pathParam);
-                destinationNode = containerLoader.factory().newNodeDraft(pathParam);
-                destinationNode.setLabel(pathParam);
-                destinationNode.setSize(100f);
-                containerLoader.addNode(destinationNode);
-            } else {
-                LoggerUtils.info("NODE DEST FOR EDGE ALREADY EXISTS - " + pathParam);
-                destinationNode = containerLoader.getNode(pathParam);
-            }
+            
+                destinationNode = createOrGetNode(pathParam, containerLoader);
+            
 
             if (!containerLoader.edgeExists(sourceNode.getId(), destinationNode.getId())) {
                 LoggerUtils.info("NEW EDGE NEEDED - " + sourceNode.getLabel() + "-" + destinationNode.getLabel());
@@ -204,26 +211,30 @@ public class MyGephiGenerator implements Generator {
                 edgeDraft.setTarget(destinationNode);
                 edgeDraft.setLabel(sourceNode.getLabel() + "-" + destinationNode.getLabel());
                 edgeDraft.setLabelVisible(true);
-
+                edgeDraft.setLabelColor(Color.BLUE);
+                edgeDraft.setLabelSize(14f);
+                edgeDraft.setColor(Color.BLACK);
+                edgeDraft.setWeight(5f);
+                
                 containerLoader.addEdge(edgeDraft);
             }
 
             sourceNode = destinationNode;
         }
 
-        container.verify();
-        
         LoggerUtils.info("About to import ---");
         
-        if (importController == null) {
+        /*if (importController == null) {
             importController = Lookup.getDefault().lookup(ImportController.class);
         }
-
-        Processor processor = Lookup.getDefault().lookup(Processor.class);
         
+        
+                
         LoggerUtils.info("About to process ---");
         
-        importController.process(container,processor,workspace);
+        importController.process(containerLoader);*/
+        
+        
         
         LoggerUtils.info("Done ---");
     }
