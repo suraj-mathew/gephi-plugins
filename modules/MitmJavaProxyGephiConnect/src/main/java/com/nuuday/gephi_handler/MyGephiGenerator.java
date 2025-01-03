@@ -9,8 +9,12 @@ import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.gephi.graph.api.DirectedGraph;
+import org.gephi.graph.api.GraphController;
+import org.gephi.graph.api.GraphModel;
 import org.openide.util.lookup.ServiceProvider;
 import org.gephi.io.generator.spi.Generator;
 import org.gephi.io.generator.spi.GeneratorUI;
@@ -22,10 +26,16 @@ import org.gephi.io.importer.api.ImportController;
 import org.gephi.io.importer.api.NodeDraft;
 import org.gephi.io.processor.spi.Processor;
 import org.gephi.layout.api.LayoutController;
+import org.gephi.layout.plugin.AutoLayout;
+import org.gephi.layout.plugin.force.StepDisplacement;
+import org.gephi.layout.plugin.force.yifanHu.YifanHuLayout;
+import org.gephi.layout.plugin.forceAtlas.ForceAtlasLayout;
 import org.gephi.layout.spi.LayoutBuilder;
+import org.gephi.project.api.Project;
 import org.gephi.project.api.ProjectController;
 import org.gephi.project.api.Workspace;
 import org.gephi.utils.progress.ProgressTicket;
+import org.jose4j.json.internal.json_simple.parser.ContainerFactory;
 import org.openide.util.Lookup;
 
 /**
@@ -41,6 +51,7 @@ public class MyGephiGenerator implements Generator {
 
     protected ProgressTicket progress;
     private Workspace workspace = null;
+    private Container container = null;
     ImportController importController = null;
 
     private MyProxyStarter proxyStarter = null;
@@ -68,12 +79,21 @@ public class MyGephiGenerator implements Generator {
             LoggerUtils.info("----8888888888-----");
 
             LoggerUtils.info("----11111111-----");
-            containerLoader.setEdgesMergeStrategy(EdgeMergeStrategy.FIRST);
+            /*containerLoader.setEdgesMergeStrategy(EdgeMergeStrategy.FIRST);
             containerLoader.setAllowAutoNode(false);
-            containerLoader.setFillLabelWithId(true);
+            containerLoader.setFillLabelWithId(true);*/
+            
+            ProjectController projectController = Lookup.getDefault().lookup(ProjectController.class);
+Project project = projectController.newProject();
+ workspace = projectController.getCurrentWorkspace();
+ 
+ workspace.getWorkspaceMetadata().setTitle("Mitm-Java-proxy-workspace");
+  container = Lookup.getDefault().lookup(Container.Factory.class).newContainer();
+  container.setSource("Mitm-Java-proxy-container");
             
             LoggerUtils.info("----22222-----");
-       
+            
+       containerLoader = container.getLoader();
             //workspace = Lookup.getDefault().lookup(ProjectController.class).openNewWorkspace();
             //LoggerUtils.info("----333333333-----"+workspace);
             //workspace.getWorkspaceMetadata().setTitle("Mitm-Java-Proxy-workspace");
@@ -209,7 +229,7 @@ LoggerUtils.info("----addUrlDataToGraph domain -----"+domain);
 
                 edgeDraft.setSource(sourceNode);
                 edgeDraft.setTarget(destinationNode);
-                edgeDraft.setLabel(sourceNode.getLabel() + "-" + destinationNode.getLabel());
+                edgeDraft.setLabel(pathParam);
                 edgeDraft.setLabelVisible(true);
                 edgeDraft.setLabelColor(Color.BLUE);
                 edgeDraft.setLabelSize(14f);
@@ -224,17 +244,55 @@ LoggerUtils.info("----addUrlDataToGraph domain -----"+domain);
 
         LoggerUtils.info("About to import ---");
         
-        /*if (importController == null) {
+        if (importController == null) {
             importController = Lookup.getDefault().lookup(ImportController.class);
         }
         
-        
                 
         LoggerUtils.info("About to process ---");
-        
-        importController.process(containerLoader);*/
-        
-        
+        Processor processor = Lookup.getDefault().lookup(Processor.class);
+        LoggerUtils.info("processing ---");
+       importController.process(container, processor, workspace);
+       
+       //See if graph is well imported
+       LoggerUtils.info("See if graph is well imported ---");
+        GraphModel graphModel = Lookup.getDefault().lookup(GraphController.class).getGraphModel();
+        DirectedGraph graph = graphModel.getDirectedGraph();
+LoggerUtils.info("--> Nodes: " + graph.getNodeCount());
+LoggerUtils.info("--> Edges: " + graph.getEdgeCount());
+ 
+//Layout for 1 minute
+/*AutoLayout autoLayout = new AutoLayout(1, TimeUnit.MINUTES);
+LoggerUtils.info("--> layout 11111: ");
+autoLayout.setGraphModel(graphModel);
+LoggerUtils.info("--> layout 22222: ");
+        YifanHuLayout firstLayout = new YifanHuLayout(null, new StepDisplacement(1f));
+        LoggerUtils.info("--> layout 3333: ");
+ForceAtlasLayout secondLayout = new ForceAtlasLayout(null);
+LoggerUtils.info("--> layout 4444: ");
+AutoLayout.DynamicProperty adjustBySizeProperty = AutoLayout.createDynamicProperty("forceAtlas.adjustSizes.name", Boolean.TRUE, 0.1f);//True after 10% of layout time
+LoggerUtils.info("--> layout 55555: ");
+AutoLayout.DynamicProperty repulsionProperty = AutoLayout.createDynamicProperty("forceAtlas.repulsionStrength.name", Double.parseDouble("500"), 0f);//500 for the complete period
+LoggerUtils.info("--> layout 66666: ");
+autoLayout.addLayout(firstLayout, 0.5f);
+LoggerUtils.info("--> layout 77777: ");
+autoLayout.addLayout(secondLayout, 0.5f, new AutoLayout.DynamicProperty[]{adjustBySizeProperty, repulsionProperty});
+LoggerUtils.info("--> layout 88888: ");
+autoLayout.execute();
+*/
+
+LoggerUtils.info("YifanHuLayout ---");
+YifanHuLayout firstLayout = new YifanHuLayout(null, new StepDisplacement(1f));
+firstLayout.setGraphModel(graphModel);
+firstLayout.initAlgo();
+firstLayout.resetPropertiesValues();
+firstLayout.setOptimalDistance(200f);
+ LoggerUtils.info("YifanHuLayout ---222222222");
+for (int i = 0; i < 100 && firstLayout.canAlgo(); i++) {
+   firstLayout.goAlgo();
+}
+LoggerUtils.info("YifanHuLayout ---3333333");
+firstLayout.endAlgo();
         
         LoggerUtils.info("Done ---");
     }
