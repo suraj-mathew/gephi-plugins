@@ -12,6 +12,8 @@ public class MyProxyStarter {
     public void startProxy() throws Exception {
     	if(proxyServer == null) {
                 LoggerUtils.info("Going to start mitm server...");
+                System.setProperty("jdk.tls.namedGroups", "secp256r1, secp384r1, ffdhe2048, ffdhe3072");
+                
     		proxyServer = new ProxyServer(proxyPort); //0 means random port
     		proxyServer.start(PROXY_TIMEOUT);
     		proxyPort = proxyServer.getPort(); //get the proxy server port

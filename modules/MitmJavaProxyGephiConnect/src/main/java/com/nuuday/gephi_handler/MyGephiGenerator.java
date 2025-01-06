@@ -261,25 +261,6 @@ LoggerUtils.info("----addUrlDataToGraph domain -----"+domain);
 LoggerUtils.info("--> Nodes: " + graph.getNodeCount());
 LoggerUtils.info("--> Edges: " + graph.getEdgeCount());
  
-//Layout for 1 minute
-/*AutoLayout autoLayout = new AutoLayout(1, TimeUnit.MINUTES);
-LoggerUtils.info("--> layout 11111: ");
-autoLayout.setGraphModel(graphModel);
-LoggerUtils.info("--> layout 22222: ");
-        YifanHuLayout firstLayout = new YifanHuLayout(null, new StepDisplacement(1f));
-        LoggerUtils.info("--> layout 3333: ");
-ForceAtlasLayout secondLayout = new ForceAtlasLayout(null);
-LoggerUtils.info("--> layout 4444: ");
-AutoLayout.DynamicProperty adjustBySizeProperty = AutoLayout.createDynamicProperty("forceAtlas.adjustSizes.name", Boolean.TRUE, 0.1f);//True after 10% of layout time
-LoggerUtils.info("--> layout 55555: ");
-AutoLayout.DynamicProperty repulsionProperty = AutoLayout.createDynamicProperty("forceAtlas.repulsionStrength.name", Double.parseDouble("500"), 0f);//500 for the complete period
-LoggerUtils.info("--> layout 66666: ");
-autoLayout.addLayout(firstLayout, 0.5f);
-LoggerUtils.info("--> layout 77777: ");
-autoLayout.addLayout(secondLayout, 0.5f, new AutoLayout.DynamicProperty[]{adjustBySizeProperty, repulsionProperty});
-LoggerUtils.info("--> layout 88888: ");
-autoLayout.execute();
-*/
 
 LoggerUtils.info("YifanHuLayout ---");
 YifanHuLayout firstLayout = new YifanHuLayout(null, new StepDisplacement(1f));
