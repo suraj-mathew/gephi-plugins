@@ -8,6 +8,7 @@ import java.util.Date;
 import java.util.logging.FileHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.logging.SimpleFormatter;
 import org.openide.util.Exceptions;
 
 /**
@@ -16,13 +17,14 @@ import org.openide.util.Exceptions;
  */
 public final class LoggerUtils {
     private static final Logger LOG;
-    private static final SimpleDateFormat DDMONYYYYHH24MI = new SimpleDateFormat("ddMMMyyyyHHmm");
+    private static final SimpleDateFormat DDMONYYYYHH24MI = new SimpleDateFormat("ddMMMyyyy-HHmm");
     
     private static FileHandler logFileHandler;
     
     static {
         try {
-            logFileHandler = new FileHandler("MitmJavaProxyGephiConnector-"+DDMONYYYYHH24MI.format(new Date()));
+            logFileHandler = new FileHandler("MitmJavaProxyGephiConnector-"+DDMONYYYYHH24MI.format(new Date())+".log");
+            logFileHandler.setFormatter(new SimpleFormatter());
         } catch (IOException ex) {
             Exceptions.printStackTrace(ex);
         } catch (SecurityException ex) {
